@@ -120,8 +120,8 @@ def main():
     
     print("ОБРЕЗАННЫЙ ОТВЕТ:", repr(completion))
     
-    data = extract_json(completion)
-    print(data)
+    #data = extract_json(completion)
+    #print(data)
 
 
 
