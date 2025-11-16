@@ -34,18 +34,6 @@ SYSTEM_PROMPT = (
     "- Не пиши примеры.\n"
     "Только один объект формата:\n"
     "{'rating': '...', 'why': '...', 'label': '...'}\n"
-
-    "ПРИМЕРЫ РАЗБОРА:\n"
-    "Текст: 'Котенок играл с мячиком' → "
-    "{'rating':'0+','why':'безопасный детский контент','label':'без нарушений'}\n"
-    "Текст: 'Он ударил его кулаком по лицу' → "
-    "{'rating':'16+','why':'сцена физического насилия','label':'насилие'}\n"
-    "Текст: 'Она выругалась матом' → "
-    "{'rating':'18+','why':'ненормативная лексика','label':'нецензурная лексика'}\n"
-    "Текст: 'Они выпили вина за ужином' → "
-    "{'rating':'16+','why':'упоминание алкоголя','label':'алкоголь'}\n"
-    "Текст: 'В темноте послышался страшный шорох' → "
-    "{'rating':'12+','why':'элементы страха и напряжения','label':'страшное'}\n"
 )
 
 
@@ -117,6 +105,18 @@ def main():
 
         decoded = tokenizer.decode(out[0], skip_special_tokens=True)
         completion = decoded[len(prompt):].strip()
+        stop_phrase = "Текст ДЛЯ АНАЛИЗА"
+        idx = completion.find(stop_phrase)
+        if idx != -1:
+            completion_clean = completion[:idx].strip()
+        else:
+            completion_clean = completion.strip()
+        
+        print("СЫРОЙ ОТВЕТ МОДЕЛИ:\n", completion)
+        print("\nОБРЕЗАННЫЙ ФРАГМЕНТ ДЛЯ JSON:\n", completion_clean, "\n")
+        
+        data = extract_json(completion_clean)
+
         print("СЫРОЙ ОТВЕТ МОДЕЛИ:\n", completion)
         print()
 
