@@ -103,12 +103,19 @@ def main():
             eos_token_id=tokenizer.eos_token_id,
             pad_token_id=tokenizer.eos_token_id,
         )
-
-    decoded = tokenizer.decode(out[0], skip_special_tokens=True)
-    completion = decoded[len(prompt):].strip()
-
+    
+    # сколько токенов было на входе
+    input_len = inputs["input_ids"].shape[-1]
+    
+    # берём только сгенерированные токены
+    gen_tokens = out[0][input_len:]
+    
+    completion = tokenizer.decode(gen_tokens, skip_special_tokens=True).strip()
+    
+    print("СЫРОЙ ОТВЕТ МОДЕЛИ:", repr(completion))  # очень рекомендую оставить для отладки
+    
     data = extract_json(completion)
-    print("РАЗОБРАННЫЙ JSON:", data)
+    print(data)
 
 
 if __name__ == "__main__":
