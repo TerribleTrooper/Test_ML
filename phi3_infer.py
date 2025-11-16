@@ -87,30 +87,29 @@ def main():
     if LORA_ADAPTER:
         model = PeftModel.from_pretrained(model, LORA_ADAPTER).to(device)
 
-    while True:
-        msg = input("Введите предложение (пусто — выход): ").strip()
-        if not msg:
-            break
+    msg = input("Введите предложение: ").strip()
+    if not msg:
+        break
 
-        prompt = build_prompt(msg)
-        inputs = tokenizer(prompt, return_tensors="pt").to(device)
+    prompt = build_prompt(msg)
+    inputs = tokenizer(prompt, return_tensors="pt").to(device)
 
-        with torch.no_grad():
-            out = model.generate(
-                **inputs,
-                max_new_tokens=80,
-                do_sample=False,
-                eos_token_id=tokenizer.eos_token_id,
-                pad_token_id=tokenizer.eos_token_id,
-            )
-        
-        decoded = tokenizer.decode(out[0], skip_special_tokens=True)
-        completion = decoded[len(prompt):].strip()
-        
-        data = extract_json(completion)
-        
-        print("РАЗОБРАННЫЙ JSON:", data)
-        print("-" * 40)
+    with torch.no_grad():
+        out = model.generate(
+            **inputs,
+            max_new_tokens=80,
+            do_sample=False,
+            eos_token_id=tokenizer.eos_token_id,
+            pad_token_id=tokenizer.eos_token_id,
+        )
+    
+    decoded = tokenizer.decode(out[0], skip_special_tokens=True)
+    completion = decoded[len(prompt):].strip()
+    
+    data = extract_json(completion)
+    
+    print("РАЗОБРАННЫЙ JSON:", data)
+    print("-" * 40)
 
 
 if __name__ == "__main__":
