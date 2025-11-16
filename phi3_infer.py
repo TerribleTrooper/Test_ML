@@ -109,7 +109,6 @@ def main():
 
     data = extract_json(completion)
     print("РАЗОБРАННЫЙ JSON:", data)
-    print("-" * 40)
 
 
 if __name__ == "__main__":
