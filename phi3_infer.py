@@ -89,7 +89,8 @@ def main():
 
     msg = input("Введите предложение: ").strip()
     if not msg:
-        break
+        print("Пустой ввод, выхожу.")
+        return
 
     prompt = build_prompt(msg)
     inputs = tokenizer(prompt, return_tensors="pt").to(device)
@@ -102,12 +103,11 @@ def main():
             eos_token_id=tokenizer.eos_token_id,
             pad_token_id=tokenizer.eos_token_id,
         )
-    
+
     decoded = tokenizer.decode(out[0], skip_special_tokens=True)
     completion = decoded[len(prompt):].strip()
-    
+
     data = extract_json(completion)
-    
     print("РАЗОБРАННЫЙ JSON:", data)
     print("-" * 40)
 
