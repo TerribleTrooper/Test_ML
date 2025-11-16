@@ -125,7 +125,7 @@ def main():
     if end != -1:
         completion = completion[:end+1]
     
-    print("ОБРЕЗАННЫЙ ОТВЕТ:", repr(completion))
+    print(repr(completion))
     
     #data = extract_json(completion)
     #print(data)
