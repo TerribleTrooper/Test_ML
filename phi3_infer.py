@@ -58,14 +58,29 @@ def build_prompt(message: str) -> str:
     )
 
 def extract_json(text: str) -> dict:
-    # Ищем первый блок {...}
-    m = re.search(r"\{.*\}", text, flags=re.S)
+    # Ищем ПЕРВЫЙ ненаслоенный блок {...}
+    m = re.search(r"\{[^{}]*\}", text, flags=re.S)
     if not m:
         return {}
+
+    snippet = m.group(0).strip()
+
+    # Сначала пробуем как нормальный JSON с двойными кавычками
     try:
-        return json.loads(m.group(0))
+        return json.loads(snippet)
     except json.JSONDecodeError:
+        pass
+
+    # Если не получилось — пробуем как python-словарь с одинарными кавычками
+    try:
+        import ast
+        data = ast.literal_eval(snippet)
+        if isinstance(data, dict):
+            return data
         return {}
+    except Exception:
+        return {}
+
 
 def main():
     # Принудительно используем CPU, чтобы не ловить OOM на MPS
@@ -93,9 +108,12 @@ def main():
         with torch.no_grad():
             out = model.generate(
                 **inputs,
-                max_new_tokens=256,
+                max_new_tokens=128,              # можно даже 64
                 do_sample=False,
+                eos_token_id=tokenizer.eos_token_id,
+                pad_token_id=tokenizer.eos_token_id,
             )
+
 
         decoded = tokenizer.decode(out[0], skip_special_tokens=True)
         completion = decoded[len(prompt):].strip()
