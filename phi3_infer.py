@@ -113,10 +113,16 @@ def main():
     
     completion = tokenizer.decode(gen_tokens, skip_special_tokens=True).strip()
     
-    print("СЫРОЙ ОТВЕТ МОДЕЛИ:", repr(completion))  # очень рекомендую оставить для отладки
+    # Обрезаем всё после первой закрывающей фигурной скобки
+    end = completion.find("}")
+    if end != -1:
+        completion = completion[:end+1]
+    
+    print("ОБРЕЗАННЫЙ ОТВЕТ:", repr(completion))
     
     data = extract_json(completion)
     print(data)
+
 
 
 if __name__ == "__main__":
